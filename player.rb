@@ -1,26 +1,44 @@
 class Player
   attr_reader :name, :cards_hand, :score
+  attr_accessor :bank_player
+
+  START_BANK = 100
 
   def initialize(name)
     @name = name
-    @cards_hand = []    
+    @cards_hand ||= [] 
+    @bank_player = START_BANK
+    validate!
   end
 
-  def skip_turn
-
+  def bet
+    bet = 10
   end
 
-  def add_card(card)
+  def bank_bet
+    @bank_player -= 10 unless @bank_player == 0
+  end
+
+  def start_card(card)
     @cards_hand = card
   end
 
-  def open_cards
+  def add_card(card)
+    @cards_hand.size <= 2 ? @cards_hand << card : return
+  end
 
+  def open_cards
+    @cards_hand.each { |card| card.to_s  }
+  end
+
+  def reset_cards
+    @cards_hand.clear
+    @score = 0
   end
 
   def count_scores
     @score = 0
-    @cards_hand.each do |card|
+    @cards_hand.flatten.each do |card|
       if card.picture.is_a?(String) && card.picture != 'A'
         @score += 10
       elsif card.picture == 'A'
@@ -29,5 +47,9 @@ class Player
         @score += card.picture
       end
     end
+  end
+
+  def validate!
+    raise "Имя не может быть пустым" if @name == '' || @name.nil?  
   end
 end
