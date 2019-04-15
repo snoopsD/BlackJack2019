@@ -24,7 +24,7 @@ class Player
   end
 
   def add_card(card)
-    @cards_hand.size <= 2 ? @cards_hand << card : return
+    @cards_hand << card if @cards_hand.size <= 2   
   end
 
   def open_cards
@@ -49,7 +49,20 @@ class Player
     end
   end
 
+  def bust?
+    true if @score > 21
+  end
+
+  def max_cards
+    @cards_hand.size == 3
+  end
+
+  def black_jack
+    @score == 21
+  end
+
   def validate!
     raise "Имя не может быть пустым" if @name == '' || @name.nil?  
+    true
   end
 end
