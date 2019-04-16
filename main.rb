@@ -9,6 +9,7 @@ class Main
   def initialize 
     @deck = Deck.new
     @bank = Bank.new
+    @dealer = Player.new('Dealer')
   end
 
   def actions
@@ -27,17 +28,15 @@ class Main
       3 => :show_cards
     }
     system 'clear'
-    call_action(options[action])
+    send options[action]
   end
 
   def welcome
     system 'clear'
-    puts "Добро пожаловать в игру BlackJack"
-    puts "Введите ваше имя: "
-    name = gets.chomp
-    @player = Player.new(name)
-    @dealer = Player.new('Dealer') 
+    puts "Добро пожаловать в игру BlackJack" 
+    create_user
   end
+
 
   def begin_game
     players_bet
@@ -94,28 +93,32 @@ class Main
   end
 
   def retry_again
-    if @player.bank_player == 0 || @dealer.bank_player == 0
+    if @player.bank? || @dealer.bank?
       puts "У игрока недостаточно денег для продолжения игры" 
       exit
     end 
     puts "Сыграть еще раз? 1: Да 2: Нет"
     user_choice = gets.to_i 
-    return "Неверный выбор" if user_choice > 2
     case user_choice
     when 1
       begin_game
     when 2
       puts "Спасибо за игру!"
       exit
+    else
+      puts "Неверный выбор"
     end
   end
 
   private
 
-  def call_action(method)
-    send(method)
+  def create_user
+    puts "Введите ваше имя: "
+    name = gets.chomp
+    @player = Player.new(name)
   rescue RuntimeError => e 
-    puts e.inspect 
+    puts e.inspect
+    create_user
   end
 
   def scores

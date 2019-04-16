@@ -36,6 +36,10 @@ class Player
     @score = 0
   end
 
+  def bank?
+    @bank_player.zero?
+  end
+
   def count_scores
     @score = 0
     @cards_hand.flatten.each do |card|
@@ -62,7 +66,7 @@ class Player
   end
 
   def validate!
-    raise "Имя не может быть пустым" if @name == '' || @name.nil?  
+    raise "Имя не может быть пустым" if @name == ' ' || @name.empty?
     true
   end
 end
