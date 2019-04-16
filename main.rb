@@ -6,14 +6,14 @@ require_relative 'hand.rb'
 require_relative 'interface.rb'
 
 class Main
-  attr_reader :deck, :interface, :bank_player, :bank
-  
-  def initialize 
+  attr_reader :deck, :interface
+
+  def initialize
     @deck = Deck.new
     @bank = Bank.new
     @dealer = Player.new('Dealer')
     @interface = Interface.new
-  end  
+  end
 
   def run
     interface.welcome
@@ -23,21 +23,21 @@ class Main
   end
 
   def new_game
-    loop do   
+    loop do
       begin_games
       middle_game
     end
   end
 
   def actions
-    actions = [ 
+    actions = [
       '1. Пропустить ход',
       '2. Добавить карту',
       '3. Открыть карты',
       '0. Выйти'
     ]
     actions.each { |action| puts action }
-  end 
+  end
 
   def exec_actions(action)
     options = {
@@ -51,7 +51,7 @@ class Main
   def user_name
     name = gets.chomp
     @player = Player.new(name)
-  rescue RuntimeError => e 
+  rescue RuntimeError => e
     puts e.inspect
     user_name
   end
@@ -63,7 +63,7 @@ class Main
     @dealer.hand.start_card(@deck.cards.sample(2))
     compare_cards
     interface.player_cards
-    show_player_scores
+    interface.show_player_scores(@player)
   end
 
   def middle_game
@@ -71,14 +71,14 @@ class Main
       actions
       choice = gets.to_i
       exec_actions(choice)
-    end  
+    end
   end
 
   def skip_player_turn
     interface.dealer_turn
     if @dealer.hand.score < 17
-      @dealer.hand.add_card(@deck.cards.sample(1)) 
-    interface.dealer_take_card
+      @dealer.hand.add_card(@deck.cards.sample(1))
+      interface.dealer_take_card
     else
       interface.dealer_skip_turn
     end
@@ -90,49 +90,39 @@ class Main
       interface.max_cards
     else
       @player.hand.add_card(@deck.cards.sample(1))
-    end  
-    puts @player.hand.open_cards  
+    end
+    puts @player.hand.open_cards
     compare_cards
   end
 
   def scores
     @player.hand.count_scores
-    @dealer.hand.count_scores    
-  end
-
-  def show_player_scores
-    puts @player.hand.cards_hand.flatten
-    puts @player.hand.score    
-  end
-
-  def show_dealer_scores
-    puts @dealer.hand.cards_hand.flatten
-    puts @dealer.hand.score    
+    @dealer.hand.count_scores
   end
 
   def players_bet
     @player.bank_bet
     @dealer.bank_bet
-    @bank.win_bank(@player.bet+@dealer.bet)
+    @bank.win_bank(@player.bet + @dealer.bet)
   end
 
   def compare_cards
     scores
-    if @player.hand.bust? 
+    if @player.hand.bust?
       show_cards
     elsif @player.hand.max_cards && @dealer.hand.max_cards
-      show_cards 
+      show_cards
     elsif @player.hand.black_jack || @dealer.hand.black_jack
       show_cards
-    end  
+    end
   end
 
   def show_cards
     system 'clear'
     interface.player_cards
-    show_player_scores
+    interface.show_player_scores(@player)
     interface.dealer_cards
-    show_dealer_scores    
+    interface.show_dealer_scores(@dealer)
     who_win
     retry_again
   end
@@ -162,16 +152,16 @@ class Main
     if @player.bank? || @dealer.bank?
       interface.no_money
       exit
-    end 
+    end
     interface.play_again
-    user_choice = gets.to_i 
+    user_choice = gets.to_i
     case user_choice
     when 1
       begin_games
     else
       exit
     end
-  end  
+  end
 end
 
 Main.new.run

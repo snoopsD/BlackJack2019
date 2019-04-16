@@ -8,5 +8,5 @@ class Card
 
   def to_s
     "#{@picture}#{rank}"
-  end 
+  end
 end

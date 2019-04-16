@@ -11,11 +11,11 @@ class Hand
   end
 
   def add_card(card)
-    @cards_hand << card if @cards_hand.size <= 2   
+    @cards_hand << card if @cards_hand.size <= 2
   end
 
   def open_cards
-    @cards_hand.each { |card| card.to_s  }
+    @cards_hand.each(&:to_s)
   end
 
   def reset_cards
@@ -38,14 +38,13 @@ class Hand
   def count_scores
     @score = 0
     @cards_hand.flatten.each do |card|
-      if card.picture.is_a?(String) && card.picture != 'A'
-        @score += 10
-      elsif card.picture == 'A'
-        @score <= 10 ? @score += 11 : @score += 1
-      else  
-        @score += card.picture
-      end
+      @score += if card.picture.is_a?(String) && card.picture != 'A'
+                  10
+                elsif card.picture == 'A'
+                  @score <= 10 ? 11 : 1
+                else
+                  card.picture
+                end
     end
   end
 end
-
